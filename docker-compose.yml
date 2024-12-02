@@ -1,0 +1,17 @@
+services:
+  pzkosz-postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: pzkosz
+      POSTGRES_USER: pzkosz_user
+      POSTGRES_PASSWORD: password
+    ports:
+      - '5432:5432'
+    networks:
+      - pzkosz-net
+    volumes:
+      - pzkosz-db-data:/var/lib/postgresql/data
+
+volumes:
+  pzkosz-db-data:
+
