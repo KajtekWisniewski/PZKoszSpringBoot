@@ -52,24 +52,35 @@ public class PlayerController {
 
 
 
-    // Assign a player to a team
-    @PostMapping("/assign/{playerId}/{teamId}")
-    public String assignPlayerToTeam(@PathVariable Long playerId, @PathVariable Long teamId) {
+    @PostMapping("/{teamId}/player/add")
+    public String addPlayerToTeam(@PathVariable long teamId, @RequestParam long playerId) {
         playerService.assignPlayerToTeam(playerId, teamId);
-        return "redirect:/player/";
+        return "redirect:/team/" + teamId;
     }
 
     // Remove a player from a team
     @PostMapping("/remove/{playerId}")
     public String removePlayerFromTeam(@PathVariable Long playerId) {
         playerService.removePlayerFromTeam(playerId);
-        return "redirect:/player/";
+        return "redirect:/player/list";
     }
 
     // Delete player by ID
     @GetMapping("/delete/{id}")
     public String deletePlayer(@PathVariable Long id) {
         playerService.deletePlayerById(id);
-        return "redirect:/player/";
+        return "redirect:/player/list";
+    }
+
+    @GetMapping("/{id}")
+    public String getPlayerDetail(@PathVariable("id") Long id, Model model) {
+        Player player = playerService.getPlayerById(id);
+        if (player != null) {
+            model.addAttribute("player", player);
+            return "player/detail";
+        } else {
+            model.addAttribute("error", "Player not found");
+            return "error";
+        }
     }
 }

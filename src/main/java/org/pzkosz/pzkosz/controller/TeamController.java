@@ -25,7 +25,6 @@ public class TeamController {
     // Display teams on homepage
     @GetMapping("/")
     public String listTeamsOnHomePage(Model model) {
-        System.out.println("Loading homepage with teams...");
         model.addAttribute("teams", teamService.getAllTeams());
         return "home";
     }
@@ -63,8 +62,10 @@ public class TeamController {
     public String viewTeamDetails(@PathVariable long id, Model model) {
         Team team = teamService.getTeamById(id);
         List<Player> players = playerService.getPlayersByTeam(id);
+        List<Player> playersWithoutTeam = playerService.getPlayersWithoutTeam();
         model.addAttribute("team", team);
         model.addAttribute("players", players);
+        model.addAttribute("playersWithoutTeam", playersWithoutTeam);
         return "team/detail"; // Create "team/detail.html" to display team details and player list
     }
 
@@ -76,16 +77,12 @@ public class TeamController {
         return "player/add"; // Create "player/add.html" for adding a player
     }
 
-    // Handle form submission for adding a player to a team
-    @PostMapping("/{teamId}/player/add")
-    public String addPlayerToTeam(@PathVariable long teamId, @ModelAttribute Player player) {
-        Team team = teamService.getTeamById(teamId);
-        player.setTeam(team);
-        playerService.savePlayer(player);
-        return "redirect:/team/" + teamId; // Redirect to team details page
+    @PostMapping("/{teamId}/player/add/{playerId}")
+    public String addPlayerToTeam(@PathVariable long teamId, @RequestParam long playerId) {
+        playerService.assignPlayerToTeam(playerId, teamId);
+        return "redirect:/team/" + teamId; // Redirect to the team details page
     }
 
-    // Remove a player from a team
     @GetMapping("/{teamId}/player/remove/{playerId}")
     public String removePlayerFromTeam(@PathVariable long teamId, @PathVariable long playerId) {
         playerService.removePlayerFromTeam(playerId);

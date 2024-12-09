@@ -18,13 +18,25 @@
     </thead>
     <tbody>
     <tr th:each="player : ${players}">
-        <td th:text="${player.name}"></td>
+        <td>
+            <!-- Link to Player Detail Page -->
+            <a th:href="@{/player/{id}(id=${player.id})}" th:text="${player.name}"></a>
+        </td>
         <td th:text="${player.position}"></td>
-        <td th:text="${player.team != null ? player.team.name : 'No Team'}"></td>
+        <td>
+            <span th:if="${player.team != null}">
+                <a th:href="@{/team/{id}(id=${player.team.id})}" th:text="${player.team.name}"></a>
+            </span>
+            <span th:if="${player.team == null}" th:text="'No Team'"></span>
+        </td>
         <td>
             <a th:href="@{/player/delete/{id}(id=${player.id})}">Delete</a>
         </td>
         <td>
-            <form th:action="@{/player/assign/{playerId}/{teamId}(playerId=${player.id}, teamId=${team.id})}" method="post">
-                <button type="submit" th:if="${player.team == null}">Assign to Team</button>
-            </form>
+            <!-- Form for assigning to a team can go here -->
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

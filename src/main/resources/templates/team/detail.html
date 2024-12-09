@@ -19,15 +19,35 @@
         <tr>
             <th>Name</th>
             <th>Position</th>
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="player : ${players}">
-            <td th:text="${player.name}">Player Name</td>
+            <td>
+                <!-- Link to player's detail page -->
+                <a th:href="@{/player/{id}(id=${player.id})}" th:text="${player.name}"></a>
+            </td>
             <td th:text="${player.position}">Player Position</td>
+            <td>
+                <!-- Form for removing a player from the team -->
+                <form th:action="@{/team/{teamId}/player/remove/{playerId}(teamId=${team.id}, playerId=${player.id})}" method="get">
+                    <button type="submit">Remove</button>
+                </form>
+            </td>
         </tr>
         </tbody>
     </table>
+
+    <h3>Add Player to Team</h3>
+    <form th:action="@{/team/{teamId}/player/add/{playerId}(teamId=${team.id})}" method="post">
+        <label for="player">Choose a player without a team:</label>
+        <select id="player" name="playerId">
+            <option th:each="player : ${playersWithoutTeam}"
+                    th:value="${player.id}" th:text="${player.name}"></option>
+        </select>
+        <button type="submit">Add Player</button>
+    </form>
 </div>
 
 <div th:if="${team == null}">
@@ -38,6 +58,6 @@
     <p th:text="${error}"></p>
 </div>
 
-<a href="/team/">Back to Team List</a>
+<a href="/team/list">Back to Team List</a>
 </body>
 </html>

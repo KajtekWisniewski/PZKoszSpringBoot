@@ -4,21 +4,29 @@ import org.pzkosz.pzkosz.model.Player;
 import org.pzkosz.pzkosz.repository.PlayerRepository;
 import org.pzkosz.pzkosz.model.Team;
 import org.springframework.stereotype.Service;
+import org.pzkosz.pzkosz.service.TeamService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PlayerService {
 
     private final PlayerRepository playerRepository;
+    private final TeamService teamService;
 
-    public PlayerService(PlayerRepository playerRepository) {
+    public PlayerService(PlayerRepository playerRepository, TeamService teamService) {
         this.playerRepository = playerRepository;
+        this.teamService = teamService;
     }
 
     // Get all players
     public List<Player> getAllPlayers() {
         return playerRepository.findAll();
+    }
+
+    public Player getPlayerById(Long id) {
+        return playerRepository.findById(id).orElse(null);
     }
 
     // Get players by team
@@ -38,9 +46,10 @@ public class PlayerService {
 
     // Assign a player to a team
     public void assignPlayerToTeam(Long playerId, Long teamId) {
-        Player player = playerRepository.findById(playerId).orElseThrow(() -> new RuntimeException("Player not found"));
-        Team team = new Team();  // Find the team by id (you can adjust to your logic)
-        team.setId(teamId);  // Set the team ID (this can be fetched from the service if necessary)
+        Player player = playerRepository.findById(playerId)
+                .orElseThrow(() -> new RuntimeException("Player not found"));
+
+        Team team = teamService.getTeamById(teamId);  // Fetch the team by ID using the teamService
         player.setTeam(team);  // Assign the team to the player
         playerRepository.save(player);
     }
@@ -50,5 +59,9 @@ public class PlayerService {
         Player player = playerRepository.findById(playerId).orElseThrow(() -> new RuntimeException("Player not found"));
         player.setTeam(null);  // Remove the team reference from the player
         playerRepository.save(player);
+    }
+
+    public List<Player> getPlayersWithoutTeam() {
+        return playerRepository.findByTeamIsNull();  // Use the repository method to fetch players without a team
     }
 }
