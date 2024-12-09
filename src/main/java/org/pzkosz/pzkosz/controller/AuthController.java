@@ -1,7 +1,7 @@
 package org.pzkosz.pzkosz.controller;
 
 import org.pzkosz.pzkosz.model.PZKoszUser;
-import org.pzkosz.pzkosz.model.UserService;
+import org.pzkosz.pzkosz.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

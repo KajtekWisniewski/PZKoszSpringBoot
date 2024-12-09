@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Team Details</title>
+</head>
+<body>
+<div th:replace="fragments/navbar.html :: navbar"></div>
+
+<h1>Team Details</h1>
+
+<div th:if="${team != null}">
+    <h2 th:text="${team.name}">Team Name</h2>
+    <p th:text="${team.description}">Team Description</p>
+    <p th:text="${team.city}">City</p>
+
+    <h3>Players</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Position</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="player : ${players}">
+            <td th:text="${player.name}">Player Name</td>
+            <td th:text="${player.position}">Player Position</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:if="${team == null}">
+    <p>No team found.</p>
+</div>
+
+<div th:if="${error != null}">
+    <p th:text="${error}"></p>
+</div>
+
+<a href="/team/">Back to Team List</a>
+</body>
+</html>

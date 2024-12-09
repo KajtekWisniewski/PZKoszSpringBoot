@@ -1,6 +1,6 @@
 package org.pzkosz.pzkosz.config;
 
-import org.pzkosz.pzkosz.model.UserService;
+import org.pzkosz.pzkosz.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -25,15 +25,16 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/home", "/register").permitAll() // Public routes
-                        .requestMatchers("/admin/**").hasRole("ADMIN")         // Admin routes
-                        .anyRequest().authenticated()                          // All other routes require authentication
+                        .requestMatchers("/", "/home", "/register").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/team/**").hasRole("USER")
+                        .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
-                        .loginPage("/login")                                   // Custom login page
-                        .permitAll()                                           // Allow everyone to access login page
+                        .loginPage("/login")
+                        .permitAll()
                 )
-                .logout((logout) -> logout.permitAll());                       // Allow logout for all users
+                .logout((logout) -> logout.permitAll());
 
         return http.build();
     }

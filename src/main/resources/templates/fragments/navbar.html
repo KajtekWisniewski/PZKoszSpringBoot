@@ -1,0 +1,49 @@
+<head>
+  <link th:href="@{/styles.css}" rel="stylesheet">
+  <title></title> <!-- Add your custom styles -->
+</head>
+<div th:fragment="navbar" xmlns:sec="http://www.w3.org/1999/xhtml">
+  <nav class="navbar">
+    <div class="container">
+      <a href="/" class="navbar-brand">PZKosz</a>
+      <ul class="navbar-menu">
+        <li><a href="/">Home</a></li>
+        <li sec:authorize="isAuthenticated()">
+          <a href="/team/add">Add Team</a>
+        </li>
+        <li sec:authorize="isAuthenticated()">
+          <a href="/team/list">List of teams</a>
+        </li>
+        <li sec:authorize="isAuthenticated()">
+          <a href="/player/add">Add Player</a>
+        </li>
+        <li sec:authorize="isAuthenticated()">
+          <a href="/player/list">List of Players</a>
+        </li>
+        <li sec:authorize="isAuthenticated()">
+          <a href="/match/archive">Match Archive</a>
+        </li>
+        <li sec:authorize="isAuthenticated()">
+          <a href="/match/schedule">Match Schedule</a>
+        </li>
+        <li sec:authorize="isAuthenticated()">
+          <a href="/match/add">Add Match</a>
+        </li>
+        <li sec:authorize="isAuthenticated()">
+          <a href="/search/">Search</a>
+        </li>
+        <li sec:authorize="!isAuthenticated()">
+          <a href="/login">Login</a>
+        </li>
+        <li sec:authorize="!isAuthenticated()">
+          <a href="/register">Register</a>
+        </li>
+        <li sec:authorize="isAuthenticated()">
+          <form th:action="@{/logout}" method="post">
+            <input type="submit" value="Sign Out"/>
+          </form>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</div>
