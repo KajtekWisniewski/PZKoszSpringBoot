@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create Match</title>
+</head>
+<body>
+<h1>Create Match</h1>
+
+<form th:action="@{/match/add}" method="post">
+    <!-- Team 1 selection -->
+    <label for="team1">Team 1:</label>
+    <select id="team1" name="team1Id" required>
+        <option th:each="team : ${teams}" th:value="${team.id}" th:text="${team.name}"></option>
+    </select><br>
+
+    <!-- Team 2 selection -->
+    <label for="team2">Team 2:</label>
+    <select id="team2" name="team2Id" required>
+        <option th:each="team : ${teams}" th:value="${team.id}" th:text="${team.name}"></option>
+    </select><br>
+
+    <!-- Match Date -->
+    <label for="matchDate">Match Date:</label>
+    <input type="date" id="matchDate" name="matchDate" required><br><br>
+
+    <!-- Player statistics for team 1 -->
+    <h3>Team 1 Players</h3>
+    <div th:each="player : ${team1Players}">
+        <label th:for="'player' + ${player.id}">Player: </label>
+        <span th:text="${player.name}"></span><br>
+
+        <label for="points1-${player.id}">Points Scored:</label>
+        <input type="number" id="points1-${player.id}" name="points1-${player.id}" required><br>
+
+        <label for="rebounds1-${player.id}">Rebounds:</label>
+        <input type="number" id="rebounds1-${player.id}" name="rebounds1-${player.id}" required><br>
+
+        <label for="assists1-${player.id}">Assists:</label>
+        <input type="number" id="assists1-${player.id}" name="assists1-${player.id}" required><br><br>
+    </div>
+
+    <!-- Player statistics for team 2 -->
+    <h3>Team 2 Players</h3>
+    <div th:each="player : ${team2Players}">
+        <label th:for="'player' + ${player.id}">Player: </label>
+        <span th:text="${player.name}"></span><br>
+
+        <label for="points2-${player.id}">Points Scored:</label>
+        <input type="number" id="points2-${player.id}" name="points2-${player.id}" required><br>
+
+        <label for="rebounds2-${player.id}">Rebounds:</label>
+        <input type="number" id="rebounds2-${player.id}" name="rebounds2-${player.id}" required><br>
+
+        <label for="assists2-${player.id}">Assists:</label>
+        <input type="number" id="assists2-${player.id}" name="assists2-${player.id}" required><br><br>
+    </div>
+
+    <input type="submit" value="Create Match">
+</form>
+
+</body>
+</html>

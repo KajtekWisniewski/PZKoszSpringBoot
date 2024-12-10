@@ -57,11 +57,15 @@ public class PlayerService {
     // Remove a player from a team
     public void removePlayerFromTeam(Long playerId) {
         Player player = playerRepository.findById(playerId).orElseThrow(() -> new RuntimeException("Player not found"));
-        player.setTeam(null);  // Remove the team reference from the player
+        player.setTeam(null);
         playerRepository.save(player);
     }
 
     public List<Player> getPlayersWithoutTeam() {
-        return playerRepository.findByTeamIsNull();  // Use the repository method to fetch players without a team
+        return playerRepository.findByTeamIsNull();
+    }
+
+    public List<Player> getPlayersByIds(List<Long> playerIds) {
+        return playerRepository.findAllById(playerIds);
     }
 }

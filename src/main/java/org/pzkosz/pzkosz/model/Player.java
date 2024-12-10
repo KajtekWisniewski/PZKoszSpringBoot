@@ -1,6 +1,7 @@
 package org.pzkosz.pzkosz.model;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "players")
@@ -19,6 +20,9 @@ public class Player {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id", nullable = true)
     private Team team;
+
+    @OneToMany(mappedBy = "player")
+    private List<PlayerStatistics> playerStatistics;
 
     public Player() {}
 
@@ -58,5 +62,13 @@ public class Player {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public List<PlayerStatistics> getPlayerStatistics() {
+        return playerStatistics;
+    }
+
+    public void setPlayerStatistics(List<PlayerStatistics> playerStatistics) {
+        this.playerStatistics = playerStatistics;
     }
 }
