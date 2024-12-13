@@ -22,42 +22,42 @@ public class TeamController {
         this.playerService = playerService;
     }
 
-    // Display teams on homepage
     @GetMapping("/")
     public String listTeamsOnHomePage(Model model) {
         model.addAttribute("teams", teamService.getAllTeams());
         return "home";
     }
 
-    // List all teams explicitly
     @GetMapping("/list")
     public String listTeams(Model model) {
         model.addAttribute("teams", teamService.getAllTeams());
         return "team/list";
     }
 
-    // Show form to add a new team
     @GetMapping("/add")
     public String showAddTeamForm(Model model) {
         model.addAttribute("team", new Team());
         return "team/add";
     }
 
-    // Handle form submission for adding a new team
     @PostMapping("/add")
     public String addTeam(@ModelAttribute Team team) {
         teamService.saveTeam(team);
         return "redirect:/team/list";
     }
 
-    // Delete a team by ID
     @GetMapping("/delete/{id}")
     public String deleteTeam(@PathVariable long id) {
+        List<Player> players = playerService.getPlayersByTeam(id);
+
+        for (Player player : players) {
+            playerService.removePlayerFromTeam(player.getId());
+        }
+
         teamService.deleteTeamById(id);
         return "redirect:/team/list";
     }
 
-    // Display details of a team by ID, including its players
     @GetMapping("/{id}")
     public String viewTeamDetails(@PathVariable long id, Model model) {
         Team team = teamService.getTeamById(id);
@@ -69,7 +69,6 @@ public class TeamController {
         return "team/detail"; // Create "team/detail.html" to display team details and player list
     }
 
-    // Show form to add a new player to a team
     @GetMapping("/{teamId}/player/add")
     public String showAddPlayerForm(@PathVariable long teamId, Model model) {
         model.addAttribute("teamId", teamId);

@@ -34,7 +34,6 @@ public class MatchController {
     @Autowired
     private PlayerStatisticsService playerStatisticsService;
 
-    // Display match creation form
     @GetMapping("/add")
     public String showCreateMatchForm(Model model) {
         List<Team> teams = teamService.getAllTeams();
@@ -45,7 +44,6 @@ public class MatchController {
         return "match/add";  // Thymeleaf template for creating a match
     }
 
-    // Handle match creation form submission
     @PostMapping("/add")
     public String createMatch(
             @RequestParam Long team1Id,
@@ -57,18 +55,14 @@ public class MatchController {
             @RequestParam Date matchDate,
             Model model) {
 
-        // Get teams by IDs
         Team team1 = teamService.getTeamById(team1Id);
         Team team2 = teamService.getTeamById(team2Id);
 
-        // Get players by IDs for each team
         List<Player> team1Players = playerService.getPlayersByIds(team1PlayerIds);
         List<Player> team2Players = playerService.getPlayersByIds(team2PlayerIds);
 
-        // Create PlayerStatistics for each player in both teams
         List<PlayerStatistics> playerStatistics = new ArrayList<>();
 
-        // Create statistics for team 1 players
         for (int i = 0; i < team1PlayerIds.size(); i++) {
             Player player = team1Players.get(i);
             PlayerStatistics stats = new PlayerStatistics();
@@ -77,7 +71,6 @@ public class MatchController {
             playerStatistics.add(stats);
         }
 
-        // Create statistics for team 2 players
         for (int i = 0; i < team2PlayerIds.size(); i++) {
             Player player = team2Players.get(i);
             PlayerStatistics stats = new PlayerStatistics();
@@ -86,11 +79,46 @@ public class MatchController {
             playerStatistics.add(stats);
         }
 
-        // Create the match
         Match match = matchService.createMatch(team1, team2, team1Players, team2Players, playerStatistics, matchDate);
 
         model.addAttribute("match", match);  // Add the match object to the model for confirmation
         return "redirect:/match/" + match.getId();  // Redirect to match details page after creation
+    }
+
+    @GetMapping("/archive")
+    public String viewMatchArchive(Model model) {
+        Date now = new Date();
+        List<Match> pastMatches = matchService.getMatchesBeforeDate(now);
+        model.addAttribute("matches", pastMatches);
+        model.addAttribute("title", "Match Archive");
+        return "match/match-archive";
+    }
+
+    @GetMapping("/schedule")
+    public String viewMatchSchedule(Model model) {
+        Date now = new Date();
+        List<Match> upcomingMatches = matchService.getMatchesAfterDate(now);
+        model.addAttribute("matches", upcomingMatches);
+        model.addAttribute("title", "Match Schedule");
+        return "match/match-schedule";
+    }
+
+    @GetMapping("/{id}")
+    public String viewMatchDetails(@PathVariable long id, Model model) {
+        Match match = matchService.getMatchById(id);
+        if (match == null) {
+            model.addAttribute("error", "Match not found.");
+            return "error";
+        }
+
+        List<Player> team1Players = playerService.getPlayersByTeam(match.getTeam1().getId());
+        List<Player> team2Players = playerService.getPlayersByTeam(match.getTeam2().getId());
+
+        model.addAttribute("match", match);
+        model.addAttribute("team1Players", team1Players);
+        model.addAttribute("team2Players", team2Players);
+
+        return "match/match-details";
     }
 
 }

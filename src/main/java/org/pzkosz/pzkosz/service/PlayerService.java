@@ -20,7 +20,6 @@ public class PlayerService {
         this.teamService = teamService;
     }
 
-    // Get all players
     public List<Player> getAllPlayers() {
         return playerRepository.findAll();
     }
@@ -29,22 +28,18 @@ public class PlayerService {
         return playerRepository.findById(id).orElse(null);
     }
 
-    // Get players by team
     public List<Player> getPlayersByTeam(Long teamId) {
         return playerRepository.findByTeamId(teamId);
     }
 
-    // Save a player (either with or without a team)
     public void savePlayer(Player player) {
         playerRepository.save(player);
     }
 
-    // Delete a player by ID
     public void deletePlayerById(Long id) {
         playerRepository.deleteById(id);
     }
 
-    // Assign a player to a team
     public void assignPlayerToTeam(Long playerId, Long teamId) {
         Player player = playerRepository.findById(playerId)
                 .orElseThrow(() -> new RuntimeException("Player not found"));
@@ -54,7 +49,6 @@ public class PlayerService {
         playerRepository.save(player);
     }
 
-    // Remove a player from a team
     public void removePlayerFromTeam(Long playerId) {
         Player player = playerRepository.findById(playerId).orElseThrow(() -> new RuntimeException("Player not found"));
         player.setTeam(null);
@@ -67,5 +61,9 @@ public class PlayerService {
 
     public List<Player> getPlayersByIds(List<Long> playerIds) {
         return playerRepository.findAllById(playerIds);
+    }
+
+    public List<Player> searchPlayers(String query) {
+        return playerRepository.findByNameRegex(query);
     }
 }

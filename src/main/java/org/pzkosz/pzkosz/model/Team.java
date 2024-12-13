@@ -19,7 +19,6 @@ public class Team {
     @Column(nullable = false)
     private String city;
 
-    // Getters and Setters
     public long getId() {
         return id;
     }

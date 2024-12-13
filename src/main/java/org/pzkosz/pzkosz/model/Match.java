@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
+@Table(name = "matches")
 public class Match {
 
     @Id
@@ -21,7 +22,6 @@ public class Match {
 
     private Date matchDate;
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

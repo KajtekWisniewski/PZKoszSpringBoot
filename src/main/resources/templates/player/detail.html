@@ -1,30 +1,63 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <title>Player Details</title>
 </head>
 <body>
 <div th:replace="fragments/navbar.html :: navbar"></div>
 
-<h1>Player Details</h1>
+<div class="container mt-4">
+    <h1 class="mb-4">Player Details</h1>
 
-<div th:if="${player != null}">
-    <h2 th:text="${player.name}">Player Name</h2>
-    <p><strong>Position:</strong> <span th:text="${player.position}">Position</span></p>
-    <p><strong>Team:</strong>
-        <a th:href="@{/team/{id}(id=${player.team.id})}" th:if="${player.team != null}" th:text="${player.team.name}"></a>
-    </p>
+    <div th:if="${player != null}">
+        <h2 th:text="${player.name}">Player Name</h2>
+        <p><strong>Position:</strong> <span th:text="${player.position}">Position</span></p>
+        <p><strong>Team:</strong>
+            <a th:href="@{/team/{id}(id=${player.team.id})}" th:if="${player.team != null}" th:text="${player.team.name}"></a>
+        </p>
+    </div>
+
+    <div th:if="${player == null}">
+        <p>No player found.</p>
+    </div>
+
+    <div th:if="${error != null}">
+        <p th:text="${error}"></p>
+    </div>
+
+    <div th:if="${statistics.size() > 0}">
+        <h3>Match Statistics</h3>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Match Date</th>
+                <th>Opponent Team</th>
+                <th>Points Scored</th>
+                <th>Rebounds</th>
+                <th>Match Details</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="stat : ${statistics}">
+                <td th:text="${#dates.format(stat.match.matchDate, 'yyyy-MM-dd')}"></td>
+                <td th:text="${stat.match.team1.id == player.team.id ? stat.match.team2.name : stat.match.team1.name}"></td>
+                <td th:text="${stat.pointsScored}"></td>
+                <td th:text="${stat.rebounds}"></td>
+                <td>
+                    <a th:href="@{/match/{id}(id=${stat.match.id})}">View Match</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${statistics.size() == 0}">
+        <p>No statistics available for this player.</p>
+    </div>
+
+    <a href="/player/list" class="btn btn-secondary mt-3">Back to Player List</a>
 </div>
 
-<div th:if="${player == null}">
-    <p>No player found.</p>
-</div>
-
-<div th:if="${error != null}">
-    <p th:text="${error}"></p>
-</div>
-
-<!-- Link to go back to the players list -->
-<a href="/player/list">Back to Player List</a>
 </body>
 </html>

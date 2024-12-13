@@ -25,28 +25,24 @@ public class MatchService {
     }
 
     public Match createMatch(Team team1, Team team2, List<Player> team1Players, List<Player> team2Players, List<PlayerStatistics> playerStatistics, Date matchDate) {
-        // Get match ID after creating the match
+
         Match match = new Match();
         match.setTeam1(team1);
         match.setTeam2(team2);
         match.setMatchDate(matchDate);
         match = matchRepository.save(match);
 
-        // Save Player Statistics and associate with match
         for (PlayerStatistics stats : playerStatistics) {
-            stats.setMatch(match);  // Associate the statistics with the match
+            stats.setMatch(match);
             playerStatisticsRepository.save(stats);
         }
 
-        // Calculate scores for both teams based on the match ID
         int team1Score = calculateTeamScore(team1Players, match.getId());
         int team2Score = calculateTeamScore(team2Players, match.getId());
 
-        // Update match with the calculated scores
         match.setTeam1Score(team1Score);
         match.setTeam2Score(team2Score);
 
-        // Save updated match with scores
         matchRepository.save(match);
 
         return match;
@@ -62,5 +58,21 @@ public class MatchService {
                         .sum())
                 .sum();
     }
+
+    public List<Match> getMatchesBeforeDate(Date date) {
+        return matchRepository.findByMatchDateBefore(date);
+    }
+
+    public List<Match> getMatchesAfterDate(Date date) {
+        return matchRepository.findByMatchDateAfter(date);
+    }
+
+    public Match getMatchById(long id) {
+        return matchRepository.findById(id).orElse(null);
+    }
+
+//    public List<Match> searchMatches(String query) {
+//        return matchRepository.findByDateOrTeamsRegex(query);
+//    }
 
 }

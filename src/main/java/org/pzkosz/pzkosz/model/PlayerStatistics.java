@@ -3,6 +3,7 @@ package org.pzkosz.pzkosz.model;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name ="playerstatistics")
 public class PlayerStatistics {
 
     @Id
@@ -15,10 +16,12 @@ public class PlayerStatistics {
     @ManyToOne
     private Match match;
 
+    @ManyToOne
+    private Team team;
+
     private int pointsScored;
     private int rebounds;
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -41,6 +44,14 @@ public class PlayerStatistics {
 
     public void setMatch(Match match) {
         this.match = match;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
     }
 
     public int getPointsScored() {
