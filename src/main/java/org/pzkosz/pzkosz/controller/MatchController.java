@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/match")
@@ -35,54 +36,27 @@ public class MatchController {
     private PlayerStatisticsService playerStatisticsService;
 
     @GetMapping("/add")
-    public String showCreateMatchForm(Model model) {
+    public String showAddMatchForm(Model model) {
         List<Team> teams = teamService.getAllTeams();
-        List<Player> allPlayers = playerService.getAllPlayers();  // Get all players for the form
-
         model.addAttribute("teams", teams);
-        model.addAttribute("players", allPlayers);  // Add all players for player selection
-        return "match/add";  // Thymeleaf template for creating a match
+        return "match/add";
     }
 
     @PostMapping("/add")
-    public String createMatch(
-            @RequestParam Long team1Id,
-            @RequestParam Long team2Id,
-            @RequestParam List<Long> team1PlayerIds,  // List of player IDs for team 1
-            @RequestParam List<Long> team2PlayerIds,  // List of player IDs for team 2
-            @RequestParam List<Integer> team1Points,  // Points for team 1 players
-            @RequestParam List<Integer> team2Points,  // Points for team 2 players
-            @RequestParam Date matchDate,
-            Model model) {
+    public String createMatch(@RequestParam("team1") Long team1Id,
+                              @RequestParam("team2") Long team2Id,
+                              @RequestParam("matchDate") String matchDate, Model model) {
 
-        Team team1 = teamService.getTeamById(team1Id);
-        Team team2 = teamService.getTeamById(team2Id);
-
-        List<Player> team1Players = playerService.getPlayersByIds(team1PlayerIds);
-        List<Player> team2Players = playerService.getPlayersByIds(team2PlayerIds);
-
-        List<PlayerStatistics> playerStatistics = new ArrayList<>();
-
-        for (int i = 0; i < team1PlayerIds.size(); i++) {
-            Player player = team1Players.get(i);
-            PlayerStatistics stats = new PlayerStatistics();
-            stats.setPlayer(player);
-            stats.setPointsScored(team1Points.get(i));
-            playerStatistics.add(stats);
+        if (team1Id.equals(team2Id)) {
+            model.addAttribute("error", "The teams cannot be the same.");
+            return "match/add";  // Return to the form with an error message
         }
 
-        for (int i = 0; i < team2PlayerIds.size(); i++) {
-            Player player = team2Players.get(i);
-            PlayerStatistics stats = new PlayerStatistics();
-            stats.setPlayer(player);
-            stats.setPointsScored(team2Points.get(i));
-            playerStatistics.add(stats);
-        }
+        // Call the service to create the match
+        Match match = matchService.createMatch(team1Id, team2Id, matchDate);
 
-        Match match = matchService.createMatch(team1, team2, team1Players, team2Players, playerStatistics, matchDate);
-
-        model.addAttribute("match", match);  // Add the match object to the model for confirmation
-        return "redirect:/match/" + match.getId();  // Redirect to match details page after creation
+        // Redirect to the match detail page
+        return "redirect:/match/" + match.getId();
     }
 
     @GetMapping("/archive")
@@ -111,15 +85,83 @@ public class MatchController {
             return "error";
         }
 
+        // Get players by team
         List<Player> team1Players = playerService.getPlayersByTeam(match.getTeam1().getId());
         List<Player> team2Players = playerService.getPlayersByTeam(match.getTeam2().getId());
+
+        // Get player statistics for the match
+        List<PlayerStatistics> team1Stats = playerStatisticsService.findByMatchAndTeam(id, match.getTeam1());
+        List<PlayerStatistics> team2Stats = playerStatisticsService.findByMatchAndTeam(id, match.getTeam2());
+
+        List<Player> team1WithoutStats = team1Players.stream()
+                .filter(player -> team1Stats.stream().noneMatch(stat -> stat.getPlayer().getId().equals(player.getId())))
+                .toList();
+
+        List<Player> team2WithoutStats = team2Players.stream()
+                .filter(player -> team2Stats.stream().noneMatch(stat -> stat.getPlayer().getId().equals(player.getId())))
+                .toList();
 
         model.addAttribute("match", match);
         model.addAttribute("team1Players", team1Players);
         model.addAttribute("team2Players", team2Players);
+        model.addAttribute("team1Stats", team1Stats);
+        model.addAttribute("team2Stats", team2Stats);
+        model.addAttribute("team1WithoutStats", team1WithoutStats);
+        model.addAttribute("team2WithoutStats", team2WithoutStats);
 
         return "match/match-details";
     }
+
+
+    @PostMapping("/{id}/submit-statistics")
+    public String submitStatistics(@PathVariable long id, @RequestParam("playerIds[]") List<Long> playerIds,
+                                   @RequestParam Map<String, String> stats, Model model) {
+        Match match = matchService.getMatchById(id);
+        if (match == null) {
+            model.addAttribute("error", "Match not found.");
+            return "error";
+        }
+
+        for (Long playerId : playerIds) {
+            Player player = playerService.getPlayerById(playerId);
+            if (player != null) {
+                int pointsScored = Integer.parseInt(stats.get("pointsScored-" + playerId));
+                int rebounds = Integer.parseInt(stats.get("rebounds-" + playerId));
+
+                PlayerStatistics playerStats = new PlayerStatistics();
+                playerStats.setMatch(match);
+                playerStats.setPlayer(player);
+                playerStats.setTeam(player.getTeam());
+                playerStats.setPointsScored(pointsScored);
+                playerStats.setRebounds(rebounds);
+
+                playerStatisticsService.savePlayerStatistics(playerStats);  // Save the new statistics
+            }
+        }
+
+        return "redirect:/match/" + id;  // Redirect to the match details page
+    }
+
+    @GetMapping("/{matchId}/edit-statistics/{statId}")
+    public String editStatistics(@PathVariable long matchId, @PathVariable long statId, Model model) {
+        PlayerStatistics stat = playerStatisticsService.getStatisticsById(statId);
+        model.addAttribute("stat", stat);
+        model.addAttribute("matchId", matchId);
+        return "match/edit-statistics";  // Display edit form
+    }
+
+    @PostMapping("/{matchId}/edit-statistics/{statId}")
+    public String updateStatistics(@PathVariable long matchId, @PathVariable long statId, PlayerStatistics updatedStat) {
+        playerStatisticsService.updateStatistics(statId, updatedStat);
+        return "redirect:/match/" + matchId;  // Redirect back to the match details page
+    }
+
+    @GetMapping("/{matchId}/delete-statistics/{statId}")
+    public String deleteStatistics(@PathVariable long matchId, @PathVariable long statId) {
+        playerStatisticsService.deleteStatistics(statId);
+        return "redirect:/match/" + matchId;  // Redirect back to the match details page
+    }
+
 
 }
 

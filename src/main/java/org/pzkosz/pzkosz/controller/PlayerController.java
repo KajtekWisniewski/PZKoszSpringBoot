@@ -51,7 +51,7 @@ public class PlayerController {
         }
 
         playerService.savePlayer(player);
-        return "redirect:/player/list";
+        return "redirect:/player/" + player.getId();
     }
 
 

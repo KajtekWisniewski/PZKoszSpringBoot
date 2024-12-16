@@ -43,7 +43,7 @@ public class TeamController {
     @PostMapping("/add")
     public String addTeam(@ModelAttribute Team team) {
         teamService.saveTeam(team);
-        return "redirect:/team/list";
+        return "redirect:/team" + team.getId();
     }
 
     @GetMapping("/delete/{id}")

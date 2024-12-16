@@ -14,39 +14,133 @@
 
         <h3>Teams</h3>
         <div class="row">
+            <!-- Team 1 -->
             <div class="col-md-6">
                 <h4>
                     <a th:href="@{/team/{id}(id=${match.team1.id})}" th:text="${match.team1.name}"></a>
-                    <span th:text="'Score: ' + ${match.team1Score}"></span>
                 </h4>
-                <ul>
-                    <li th:each="player : ${team1Players}">
-                        <a th:href="@{/player/{id}(id=${player.id})}" th:text="${player.name}"></a>
-                    </li>
-                </ul>
+                <p><strong>Score:</strong> <span th:text="${match.team1Score}"></span></p>
+                <h5>Players Statistics</h5>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Points Scored</th>
+                        <th>Rebounds</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="stat : ${team1Stats}">
+                        <td>
+                            <a th:href="@{/player/{id}(id=${stat.player.id})}" th:text="${stat.player.name}"></a>
+                        </td>
+                        <td th:text="${stat.pointsScored}"></td>
+                        <td th:text="${stat.rebounds}"></td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-warning mt-1"
+                               th:href="@{/match/{matchId}/edit-statistics/{statId}(matchId=${match.id}, statId=${stat.id})}">Edit</a>
+                            <a href="#" class="btn btn-sm btn-danger mt-1"
+                               th:href="@{/match/{matchId}/delete-statistics/{statId}(matchId=${match.id}, statId=${stat.id})}">Delete</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
+
+            <!-- Team 2 -->
             <div class="col-md-6">
                 <h4>
                     <a th:href="@{/team/{id}(id=${match.team2.id})}" th:text="${match.team2.name}"></a>
-                    <span th:text="'Score: ' + ${match.team2Score}"></span>
                 </h4>
-                <ul>
-                    <li th:each="player : ${team2Players}">
-                        <a th:href="@{/player/{id}(id=${player.id})}" th:text="${player.name}"></a>
-                    </li>
-                </ul>
+                <p><strong>Score:</strong> <span th:text="${match.team2Score}"></span></p>
+                <h5>Players Statistics</h5>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Points Scored</th>
+                        <th>Rebounds</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="stat : ${team2Stats}">
+                        <td>
+                            <a th:href="@{/player/{id}(id=${stat.player.id})}" th:text="${stat.player.name}"></a>
+                        </td>
+                        <td th:text="${stat.pointsScored}"></td>
+                        <td th:text="${stat.rebounds}"></td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-warning mt-1"
+                               th:href="@{/match/{matchId}/edit-statistics/{statId}(matchId=${match.id}, statId=${stat.id})}">Edit</a>
+                            <a href="#" class="btn btn-sm btn-danger mt-1"
+                               th:href="@{/match/{matchId}/delete-statistics/{statId}(matchId=${match.id}, statId=${stat.id})}">Delete</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
+
+        <!-- Submit Statistics for Team 1 Players -->
+        <div th:if="${team1WithoutStats.size() > 0 and #dates.format(match.matchDate, 'yyyy-MM-dd') < #dates.format(#dates.createNow(), 'yyyy-MM-dd')}">
+            <h5>Submit Statistics for Team 1 Players</h5>
+            <form th:action="@{/match/{id}/submit-statistics(id=${match.id})}" method="post">
+                <div th:each="player : ${team1WithoutStats}">
+                    <div class="form-group">
+                        <label th:for="'pointsScored-' + ${player.id}" th:text="'Points Scored for ' + ${player.name}"></label>
+                        <input type="hidden" th:name="'playerIds[]'" th:value="${player.id}" />
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <input type="number" class="form-control" th:id="'pointsScored-' + ${player.id}"
+                                       th:name="'pointsScored-' + ${player.id}" placeholder="Points" required />
+                            </div>
+                            <div class="col-md-6">
+                                <input type="number" class="form-control" th:id="'rebounds-' + ${player.id}"
+                                       th:name="'rebounds-' + ${player.id}" placeholder="Rebounds" required />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Submit Statistics</button>
+            </form>
+        </div>
+
+        <!-- Submit Statistics for Team 2 Players -->
+        <div th:if="${team2WithoutStats.size() > 0 and #dates.format(match.matchDate, 'yyyy-MM-dd') < #dates.format(#dates.createNow(), 'yyyy-MM-dd')}" >
+            <h5>Submit Statistics for Team 2 Players</h5>
+            <form th:action="@{/match/{id}/submit-statistics(id=${match.id})}" method="post">
+                <div th:each="player : ${team2WithoutStats}">
+                    <div class="form-group">
+                        <label th:for="'pointsScored-' + ${player.id}" th:text="'Points Scored for ' + ${player.name}"></label>
+                        <input type="hidden" th:name="'playerIds[]'" th:value="${player.id}" />
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <input type="number" class="form-control" th:id="'pointsScored-' + ${player.id}"
+                                       th:name="'pointsScored-' + ${player.id}" placeholder="Points" required />
+                            </div>
+                            <div class="col-md-6">
+                                <input type="number" class="form-control" th:id="'rebounds-' + ${player.id}"
+                                       th:name="'rebounds-' + ${player.id}" placeholder="Rebounds" required />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Submit Statistics</button>
+            </form>
+        </div>
+
     </div>
 
     <div th:if="${match == null}">
         <p>Match not found.</p>
     </div>
 
-    <div class="mt-3">
-        <a href="/match/archive" class="btn btn-secondary">Back to Archive</a>
-        <a href="/match/schedule" class="btn btn-secondary">Back to Schedule</a>
-    </div>
+    <!-- Back Buttons -->
+    <a href="/match/archive" class="btn btn-secondary">Back to Archive</a>
+    <a href="/match/schedule" class="btn btn-secondary">Back to Schedule</a>
 </div>
+
 </body>
 </html>

@@ -7,4 +7,5 @@ import java.util.List;
 public interface PlayerStatisticsRepository extends JpaRepository<PlayerStatistics, Long> {
     List<PlayerStatistics> findByPlayerId(long playerId);
 
+    List<PlayerStatistics> findByMatch_IdAndTeam_Id(Long matchId, Long teamId);
 }
