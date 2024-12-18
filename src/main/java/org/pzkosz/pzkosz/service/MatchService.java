@@ -1,8 +1,7 @@
 package org.pzkosz.pzkosz.service;
 
+import jakarta.transaction.Transactional;
 import org.pzkosz.pzkosz.model.Match;
-import org.pzkosz.pzkosz.model.Player;
-import org.pzkosz.pzkosz.model.PlayerStatistics;
 import org.pzkosz.pzkosz.model.Team;
 import org.pzkosz.pzkosz.repository.TeamRepository;
 import org.pzkosz.pzkosz.repository.MatchRepository;
@@ -34,7 +33,6 @@ public class MatchService {
         Team team1 = teamRepository.findById(team1Id).orElseThrow(() -> new RuntimeException("Team not found"));
         Team team2 = teamRepository.findById(team2Id).orElseThrow(() -> new RuntimeException("Team not found"));
 
-        // Parse the match date from string
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
         Date matchDate;
         try {
@@ -43,7 +41,6 @@ public class MatchService {
             throw new RuntimeException("Error parsing date");
         }
 
-        // Create and save the match
         Match match = new Match();
         match.setTeam1(team1);
         match.setTeam2(team2);
@@ -52,16 +49,6 @@ public class MatchService {
         return matchRepository.save(match);
     }
 
-
-    private int calculateTeamScore(List<Player> players, Long matchId) {
-        return players.stream()
-                .mapToInt(player -> player.getPlayerStatistics().stream()
-                        // Filter statistics by the match ID
-                        .filter(stats -> stats.getMatch().getId().equals(matchId))
-                        .mapToInt(PlayerStatistics::getPointsScored)
-                        .sum())
-                .sum();
-    }
 
     public List<Match> getMatchesBeforeDate(Date date) {
         return matchRepository.findByMatchDateBefore(date);
@@ -75,8 +62,36 @@ public class MatchService {
         return matchRepository.findById(id).orElse(null);
     }
 
-//    public List<Match> searchMatches(String query) {
-//        return matchRepository.findByDateOrTeamsRegex(query);
-//    }
+    public Integer getTeamScore(Long matchId, Long teamId) {
+        Integer score = playerStatisticsRepository.calculateTeamScore(matchId, teamId);
+        return score != null ? score : 0;
+    }
+
+    @Transactional
+    public void updateMatchScores(Long matchId) {
+        Match match = matchRepository.findById(matchId)
+                .orElseThrow(() -> new RuntimeException("Match not found"));
+
+        Integer team1Score = playerStatisticsRepository.calculateTeamScore(matchId, match.getTeam1().getId());
+        Integer team2Score = playerStatisticsRepository.calculateTeamScore(matchId, match.getTeam2().getId());
+
+        match.setTeam1Score(team1Score != null ? team1Score : 0);
+        match.setTeam2Score(team2Score != null ? team2Score : 0);
+
+        matchRepository.save(match);
+    }
+
+    public List<Match> getMatchesByTeamId(long teamId) {
+        return matchRepository.findMatchesByTeamId(teamId);
+    }
+
+    public List<Match> searchMatches(String query) {
+        try {
+            Date searchDate = new SimpleDateFormat("yyyy-MM-dd").parse(query);
+            return matchRepository.findByMatchDateOrTeam1NameContainingIgnoreCaseOrTeam2NameContainingIgnoreCase(searchDate, query, query);
+        } catch (ParseException e) {
+            return matchRepository.findByTeam1NameContainingIgnoreCaseOrTeam2NameContainingIgnoreCase(query, query);
+        }
+    }
 
 }

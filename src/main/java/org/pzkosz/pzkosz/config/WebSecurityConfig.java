@@ -33,6 +33,9 @@ public class WebSecurityConfig {
                         .loginPage("/login")
                         .permitAll()
                 )
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/admin/import/**")
+                )
                 .logout((logout) -> logout.permitAll());
 
         return http.build();

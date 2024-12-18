@@ -32,6 +32,8 @@ public class UserService implements UserDetailsService {
                 .roles(user.getRole())
                 .build();
     }
+
+
     public void registerUser(PZKoszUser user) {
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         userRepository.save(user);

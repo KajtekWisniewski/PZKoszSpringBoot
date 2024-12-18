@@ -57,20 +57,24 @@
       <p>No teams found.</p>
     </div>
 
-    <!-- Matches Section (Commented Out) -->
-    <!--    <div th:if="${matches != null && !matches.isEmpty()}">-->
-    <!--      <h3>Matches</h3>-->
-    <!--      <ul class="list-group">-->
-    <!--        <li th:each="match : ${matches}" class="list-group-item">-->
-    <!--          <a th:href="@{/match/{id}(id=${match.id})}"-->
-    <!--             th:text="${#dates.format(match.matchDate, 'yyyy-MM-dd') + ' - ' + match.team1.name + ' vs ' + match.team2.name}"></a>-->
-    <!--        </li>-->
-    <!--      </ul>-->
-    <!--    </div>-->
-    <!--    <div th:if="${matches == null || matches.isEmpty()}">-->
-    <!--      <p>No matches found.</p>-->
-    <!--    </div>-->
-  </div>
+    <div th:if="${matches != null && !matches.isEmpty()}">
+      <h3>Matches</h3>
+      <div class="row">
+        <div class="col-md-4" th:each="match : ${matches}">
+          <div class="card mb-4">
+            <div class="card-body">
+              <h5 class="card-title" th:text="${#dates.format(match.matchDate, 'yyyy-MM-dd')}"></h5>
+              <p class="card-text"><strong>Match:</strong> <span th:text="${match.team1.name} + ' vs ' + ${match.team2.name}"></span></p>
+              <a th:href="@{/match/{id}(id=${match.id})}" class="btn btn-info">View Details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+      <div th:if="${matches == null || matches.isEmpty()}">
+        <p>No matches found.</p>
+      </div>
+</div>
 </div>
 </body>
 </html>

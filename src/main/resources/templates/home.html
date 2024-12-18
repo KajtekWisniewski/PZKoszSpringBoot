@@ -18,6 +18,8 @@
       <th>Name</th>
       <th>Description</th>
       <th>City</th>
+      <th>Wins</th>
+      <th>Losses</th>
     </tr>
     </thead>
     <tbody>
@@ -25,6 +27,8 @@
       <td th:text="${team.name}"></td>
       <td th:text="${team.description}"></td>
       <td th:text="${team.city}"></td>
+      <td th:text="${team.wins}">Wins</td>
+      <td th:text="${team.losses}">Losses</td>
     </tr>
     </tbody>
   </table>

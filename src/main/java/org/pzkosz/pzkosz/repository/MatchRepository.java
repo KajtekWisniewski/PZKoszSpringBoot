@@ -13,8 +13,10 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
     List<Match> findByMatchDateAfter(Date date);
 
-//    @Query("SELECT m FROM Match m WHERE m.matchDate = :date OR m.team1.name LIKE %:pattern% OR m.team2.name LIKE %:pattern%")
-//    List<Match> findByDateOrTeamsRegex(@Param("date") Date date, @Param("pattern") String pattern);
+    @Query("SELECT m FROM Match m WHERE m.team1.id = :teamId OR m.team2.id = :teamId")
+    List<Match> findMatchesByTeamId(@Param("teamId") long teamId);
 
+    List<Match> findByMatchDateOrTeam1NameContainingIgnoreCaseOrTeam2NameContainingIgnoreCase(Date matchDate, String team1Name, String team2Name);
 
+    List<Match> findByTeam1NameContainingIgnoreCaseOrTeam2NameContainingIgnoreCase(String team1Name, String team2Name);
 }

@@ -1,0 +1,28 @@
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<beans xmlns="http://www.springframework.org/schema/beans"-->
+<!--       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+<!--       xmlns:context="http://www.springframework.org/schema/context"-->
+<!--       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">-->
+
+<!--    <context:component-scan base-package="org.pzkosz.pzkosz" />-->
+
+<!--    &lt;!&ndash; Transaction Manager Bean &ndash;&gt;-->
+<!--    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">-->
+<!--        <property name="entityManagerFactory" ref="entityManagerFactory" />-->
+<!--    </bean>-->
+
+<!--    &lt;!&ndash; CommentRepository Bean &ndash;&gt;-->
+<!--    <bean id="commentRepository" class="org.pzkosz.pzkosz.repository.CommentRepository">-->
+<!--        <property name="entityManager" ref="entityManager" />-->
+<!--    </bean>-->
+
+<!--    &lt;!&ndash; CommentService Bean &ndash;&gt;-->
+<!--    <bean id="commentService" class="org.pzkosz.pzkosz.service.CommentService">-->
+<!--        <property name="commentRepository" ref="commentRepository" />-->
+<!--    </bean>-->
+
+<!--    <context:annotation-config />-->
+
+<!--</beans>-->
+
+<!--<context:component-scan base-package="org.pzkosz.pzkosz"/>-->

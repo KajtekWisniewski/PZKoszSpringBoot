@@ -40,11 +40,12 @@ public class SearchController {
 
         List<Player> players = playerService.searchPlayers(query);
         List<Team> teams = teamService.searchTeams(query);
-        // List<Match> matches = matchService.searchMatches(query);
+
+        List<Match> matches = matchService.searchMatches(query);
 
         model.addAttribute("players", players);
         model.addAttribute("teams", teams);
-        // model.addAttribute("matches", matches);
+        model.addAttribute("matches", matches);
         model.addAttribute("query", query);
 
         return "search";

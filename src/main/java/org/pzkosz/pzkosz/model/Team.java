@@ -3,7 +3,7 @@ package org.pzkosz.pzkosz.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name ="teams")
+@Table(name = "teams")
 public class Team {
 
     @Id
@@ -18,6 +18,12 @@ public class Team {
 
     @Column(nullable = false)
     private String city;
+
+    @Column(nullable = false)
+    private int wins = 0;
+
+    @Column(nullable = false)
+    private int losses = 0;
 
     public long getId() {
         return id;
@@ -49,5 +55,21 @@ public class Team {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public int getWins() {
+        return wins;
+    }
+
+    public void setWins(int wins) {
+        this.wins = wins;
+    }
+
+    public int getLosses() {
+        return losses;
+    }
+
+    public void setLosses(int losses) {
+        this.losses = losses;
     }
 }

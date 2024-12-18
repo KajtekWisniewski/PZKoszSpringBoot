@@ -12,8 +12,10 @@
 
     <div th:if="${team != null}" class="card p-4">
         <h2 class="card-title" th:text="${team.name}">Team Name</h2>
-        <p class="card-text" th:text="${team.description}">Team Description</p>
-        <p class="card-text" th:text="${team.city}">City</p>
+        <p class="card-text" th:text="'Description: ' + ${team.description}">Team Description</p>
+        <p class="card-text" th:text="'City: ' + ${team.city}">City</p>
+        <p class="card-text" th:text="'Wins: ' + ${team.wins}">Wins</p>
+        <p class="card-text" th:text="'Losses: ' + ${team.losses}">Losses</p>
 
         <h3 class="mt-4">Players</h3>
         <table class="table table-bordered">
@@ -58,6 +60,35 @@
     <div th:if="${error != null}" class="alert alert-danger mt-4">
         <p th:text="${error}"></p>
     </div>
+
+    <h3 class="mt-4">Matches</h3>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th>Opponent</th>
+            <th>Result</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="match : ${matches}">
+            <td th:text="${#dates.format(match.matchDate, 'yyyy-MM-dd HH:mm')}">Match Date</td>
+            <td>
+                <a th:href="@{/team/{id}(id=${match.team1.id})}"
+                   th:if="${match.team2.id == team.id}"
+                   th:text="${match.team1.name}"></a>
+                <a th:href="@{/team/{id}(id=${match.team2.id})}"
+                   th:if="${match.team1.id == team.id}"
+                   th:text="${match.team2.name}"></a>
+            </td>
+            <td th:text="${match.team1Score + ' - ' + match.team2Score}">Match Result</td>
+            <td>
+                <a th:href="@{/match/{id}(id=${match.id})}" class="btn btn-info btn-sm">View</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 
     <a href="/team/list" class="btn btn-secondary mt-4">Back to Team List</a>
 </div>
