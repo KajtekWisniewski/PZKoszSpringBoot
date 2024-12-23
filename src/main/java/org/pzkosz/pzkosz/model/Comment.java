@@ -1,5 +1,7 @@
 package org.pzkosz.pzkosz.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -14,10 +16,12 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "match_id", nullable = false)
+    @JsonIgnore
     private Match match;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"password"})
     private PZKoszUser user;
 
     @Column(length = 1000)

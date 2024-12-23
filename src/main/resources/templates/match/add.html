@@ -10,24 +10,35 @@
 <div class="container">
     <h1 class="mt-5">Add Match</h1>
 
-    <form th:action="@{/match/add}" method="POST">
+    <form th:action="@{/match/add}" method="POST" id="matchForm" onsubmit="return validateForm()">
         <div class="mb-3">
             <label for="team1" class="form-label">Team 1</label>
             <select id="team1" name="team1" class="form-control" required>
-                <option th:each="team : ${teams}" th:value="${team.id}" th:text="${team.name}"></option>
+                <option value="">Select Team 1</option>
+                <option th:each="team : ${teams}"
+                        th:value="${team.id}"
+                        th:text="${team.name}"
+                        th:attr="data-name=${team.name}"></option>
             </select>
+            <div class="invalid-feedback">Please select a team</div>
         </div>
 
         <div class="mb-3">
             <label for="team2" class="form-label">Team 2</label>
             <select id="team2" name="team2" class="form-control" required>
-                <option th:each="team : ${teams}" th:value="${team.id}" th:text="${team.name}"></option>
+                <option value="">Select Team 2</option>
+                <option th:each="team : ${teams}"
+                        th:value="${team.id}"
+                        th:text="${team.name}"
+                        th:attr="data-name=${team.name}"></option>
             </select>
+            <div class="invalid-feedback">Please select a different team</div>
         </div>
 
         <div class="mb-3">
             <label for="matchDate" class="form-label">Match Date</label>
             <input type="datetime-local" id="matchDate" name="matchDate" class="form-control" required />
+            <div class="invalid-feedback">Please select a valid date and time</div>
         </div>
 
         <button type="submit" class="btn btn-primary">Create Match</button>
@@ -37,32 +48,74 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // Wait for the DOM to be ready
     document.addEventListener('DOMContentLoaded', function () {
         const team1Select = document.getElementById('team1');
         const team2Select = document.getElementById('team2');
 
+        // Function to validate team name is not empty or just whitespace
+        function isValidTeamName(name) {
+            return name && name.trim().length > 0;
+        }
+
         // Function to filter Team 2 options based on selected Team 1
         function filterTeam2Options() {
             const selectedTeam1Id = team1Select.value;
-
-            // Get all options for Team 2
             const team2Options = team2Select.querySelectorAll('option');
 
-            // Iterate through each Team 2 option and hide the selected Team 1 option
+            // Reset team2 selection if it matches team1
+            if (team2Select.value === selectedTeam1Id) {
+                team2Select.value = '';
+            }
+
+            // Hide the selected team from Team 2 options
             team2Options.forEach(option => {
                 if (option.value === selectedTeam1Id) {
-                    option.hidden = true;  // Hide the selected team from Team 2 options
+                    option.hidden = true;
+                    option.disabled = true;
                 } else {
-                    option.hidden = false; // Show other teams
+                    option.hidden = false;
+                    option.disabled = false;
                 }
             });
         }
 
-        // Add an event listener to Team 1 dropdown to filter Team 2 options
+        // Function to validate the entire form
+        window.validateForm = function() {
+            let isValid = true;
+
+            // Validate Team 1 selection
+            if (!team1Select.value || !isValidTeamName(team1Select.selectedOptions[0]?.textContent)) {
+                team1Select.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                team1Select.classList.remove('is-invalid');
+            }
+
+            // Validate Team 2 selection
+            if (!team2Select.value || !isValidTeamName(team2Select.selectedOptions[0]?.textContent) ||
+                team1Select.value === team2Select.value) {
+                team2Select.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                team2Select.classList.remove('is-invalid');
+            }
+
+            // Validate match date
+            const matchDate = document.getElementById('matchDate');
+            if (!matchDate.value) {
+                matchDate.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                matchDate.classList.remove('is-invalid');
+            }
+
+            return isValid;
+        };
+
+        // Add event listeners
         team1Select.addEventListener('change', filterTeam2Options);
 
-        // Initialize the filter on page load to ensure correct options are shown
+        // Initialize filters
         filterTeam2Options();
     });
 </script>

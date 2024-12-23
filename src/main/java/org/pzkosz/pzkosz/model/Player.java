@@ -1,5 +1,6 @@
 package org.pzkosz.pzkosz.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -19,9 +20,11 @@ public class Player {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id", nullable = true)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Team team;
 
     @OneToMany(mappedBy = "player")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "team", "player", "playerStatistics"})
     private List<PlayerStatistics> playerStatistics;
 
     public Player() {}

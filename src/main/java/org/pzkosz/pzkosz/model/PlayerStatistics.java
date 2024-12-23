@@ -1,5 +1,7 @@
 package org.pzkosz.pzkosz.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
@@ -11,12 +13,15 @@ public class PlayerStatistics {
     private Long id;
 
     @ManyToOne
+    @JsonIgnore
     private Player player;
 
     @ManyToOne
+    @JsonIgnoreProperties({"team", "hibernateLazyInitializer", "team1", "team2"})
     private Match match;
 
     @ManyToOne
+    @JsonIgnoreProperties({"description", "wins", "losses", "hibernateLazyInitializer"})
     private Team team;
 
     private int pointsScored;

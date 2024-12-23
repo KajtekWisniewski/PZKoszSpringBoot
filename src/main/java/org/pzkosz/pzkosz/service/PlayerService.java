@@ -4,10 +4,8 @@ import org.pzkosz.pzkosz.model.Player;
 import org.pzkosz.pzkosz.repository.PlayerRepository;
 import org.pzkosz.pzkosz.model.Team;
 import org.springframework.stereotype.Service;
-import org.pzkosz.pzkosz.service.TeamService;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PlayerService {
@@ -32,8 +30,8 @@ public class PlayerService {
         return playerRepository.findByTeamId(teamId);
     }
 
-    public void savePlayer(Player player) {
-        playerRepository.save(player);
+    public Player savePlayer(Player player) {
+        return playerRepository.save(player);
     }
 
     public void deletePlayerById(Long id) {
@@ -57,10 +55,6 @@ public class PlayerService {
 
     public List<Player> getPlayersWithoutTeam() {
         return playerRepository.findByTeamIsNull();
-    }
-
-    public List<Player> getPlayersByIds(List<Long> playerIds) {
-        return playerRepository.findAllById(playerIds);
     }
 
     public List<Player> searchPlayers(String query) {

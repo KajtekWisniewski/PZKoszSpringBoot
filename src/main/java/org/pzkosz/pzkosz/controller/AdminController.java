@@ -5,6 +5,7 @@ import org.pzkosz.pzkosz.service.UserService;
 import org.pzkosz.pzkosz.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class AdminController {
     @Autowired
     private TeamService teamService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/dashboard")
     public String showAdminDashboard(Model model) {
         List<PZKoszUser> users = userService.getAllUsers();
@@ -31,12 +33,14 @@ public class AdminController {
         return "admin/dashboard";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/delete/user/{id}")
     public String deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return "redirect:/admin/dashboard";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/import/teams")
     public String importTeams(@RequestParam("file") MultipartFile file) {
         try {
@@ -47,6 +51,7 @@ public class AdminController {
         return "redirect:/admin/dashboard";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/export/teams")
     public ResponseEntity<StreamingResponseBody> exportTeamsToCSV() {
         return teamService.exportTeamsToCSV();

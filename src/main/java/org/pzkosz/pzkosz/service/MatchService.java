@@ -94,4 +94,8 @@ public class MatchService {
         }
     }
 
+    public void deleteMatchById(long id) {
+        matchRepository.deleteById(id);
+    }
+
 }

@@ -31,8 +31,8 @@ public class TeamService {
         return team.orElse(null);
     }
 
-    public void saveTeam(Team team) {
-        teamRepository.save(team);
+    public Team saveTeam(Team team) {
+        return teamRepository.save(team);
     }
 
     public void deleteTeamById(Long id) {
