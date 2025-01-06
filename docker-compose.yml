@@ -1,4 +1,19 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8081:8081'
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://pzkosz-postgres:5432/pzkosz
+      SPRING_DATASOURCE_USERNAME: pzkosz_user
+      SPRING_DATASOURCE_PASSWORD: password
+    networks:
+      - pzkosz-net
+    depends_on:
+      - pzkosz-postgres
+
   pzkosz-postgres:
     image: postgres
     environment:
@@ -12,6 +27,9 @@ services:
     volumes:
       - pzkosz-db-data:/var/lib/postgresql/data
 
+networks:
+  pzkosz-net:
+    driver: bridge
+
 volumes:
   pzkosz-db-data:
-
