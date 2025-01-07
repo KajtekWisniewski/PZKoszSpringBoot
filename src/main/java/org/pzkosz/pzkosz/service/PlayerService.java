@@ -42,8 +42,8 @@ public class PlayerService {
         Player player = playerRepository.findById(playerId)
                 .orElseThrow(() -> new RuntimeException("Player not found"));
 
-        Team team = teamService.getTeamById(teamId);  // Fetch the team by ID using the teamService
-        player.setTeam(team);  // Assign the team to the player
+        Team team = teamService.getTeamById(teamId);  
+        player.setTeam(team);  
         playerRepository.save(player);
     }
 

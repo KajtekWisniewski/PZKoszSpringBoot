@@ -6,6 +6,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class AdminUserInitializer implements CommandLineRunner {
 
@@ -19,12 +21,12 @@ public class AdminUserInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Check if the admin user exists
-        if (userService.loadUserByUsername("user1") == null) {
-            // Create and save the admin user if not exists
+
+        List<PZKoszUser> users = userService.getAllUsers();
+        if (users.isEmpty()) {
             PZKoszUser adminUser = new PZKoszUser();
             adminUser.setUsername("user1");
-            adminUser.setEmail("user1@example.com"); // Set a valid email
+            adminUser.setEmail("user1@user1.pl");
             adminUser.setPassword(passwordEncoder.encode("user1"));
             adminUser.setRole("ADMIN");
 

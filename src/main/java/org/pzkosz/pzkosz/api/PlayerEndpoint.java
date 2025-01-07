@@ -26,14 +26,14 @@ public class PlayerEndpoint {
         this.playerStatisticsService = playerStatisticsService;
     }
 
-    // Get all players
+    
     @GetMapping
     public ResponseEntity<List<Player>> getAllPlayers() {
         List<Player> players = playerService.getAllPlayers();
         return new ResponseEntity<>(players, HttpStatus.OK);
     }
 
-    // Get a single player by ID
+    
     @GetMapping("/{id}")
     public ResponseEntity<?> getPlayerById(@PathVariable Long id) {
         Player player = playerService.getPlayerById(id);
@@ -43,7 +43,7 @@ public class PlayerEndpoint {
         return new ResponseEntity<>(player, HttpStatus.OK);
     }
 
-    // Create a new player
+    
     @PostMapping
     public ResponseEntity<?> createPlayer(@RequestBody Player player, @RequestParam(required = false) Long teamId) {
         if (teamId != null) {
@@ -58,7 +58,7 @@ public class PlayerEndpoint {
         return new ResponseEntity<>(createdPlayer, HttpStatus.CREATED);
     }
 
-    // Update an existing player
+    
     @PutMapping("/{id}")
     public ResponseEntity<?> updatePlayer(@PathVariable Long id, @RequestBody Player playerUpdates) {
         Player existingPlayer = playerService.getPlayerById(id);
@@ -68,13 +68,13 @@ public class PlayerEndpoint {
 
         existingPlayer.setName(playerUpdates.getName());
         existingPlayer.setPosition(playerUpdates.getPosition());
-        existingPlayer.setTeam(playerUpdates.getTeam()); // You can handle team updates more specifically if needed
+        existingPlayer.setTeam(playerUpdates.getTeam()); 
 
         Player updatedPlayer = playerService.savePlayer(existingPlayer);
         return new ResponseEntity<>(updatedPlayer, HttpStatus.OK);
     }
 
-    // Delete a player
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePlayer(@PathVariable Long id) {
         Player existingPlayer = playerService.getPlayerById(id);
@@ -113,7 +113,7 @@ public class PlayerEndpoint {
         return ResponseEntity.status(HttpStatus.OK).body("Player assigned to team successfully");
     }
 
-    // Remove a player from a team
+    
     @PostMapping("/{playerId}/remove-from-team")
     public ResponseEntity<?> removePlayerFromTeam(@PathVariable Long playerId) {
         Player player = playerService.getPlayerById(playerId);

@@ -52,22 +52,22 @@
         const team1Select = document.getElementById('team1');
         const team2Select = document.getElementById('team2');
 
-        // Function to validate team name is not empty or just whitespace
+        
         function isValidTeamName(name) {
             return name && name.trim().length > 0;
         }
 
-        // Function to filter Team 2 options based on selected Team 1
+        
         function filterTeam2Options() {
             const selectedTeam1Id = team1Select.value;
             const team2Options = team2Select.querySelectorAll('option');
 
-            // Reset team2 selection if it matches team1
+            
             if (team2Select.value === selectedTeam1Id) {
                 team2Select.value = '';
             }
 
-            // Hide the selected team from Team 2 options
+            
             team2Options.forEach(option => {
                 if (option.value === selectedTeam1Id) {
                     option.hidden = true;
@@ -79,11 +79,11 @@
             });
         }
 
-        // Function to validate the entire form
+        
         window.validateForm = function() {
             let isValid = true;
 
-            // Validate Team 1 selection
+            
             if (!team1Select.value || !isValidTeamName(team1Select.selectedOptions[0]?.textContent)) {
                 team1Select.classList.add('is-invalid');
                 isValid = false;
@@ -91,7 +91,7 @@
                 team1Select.classList.remove('is-invalid');
             }
 
-            // Validate Team 2 selection
+            
             if (!team2Select.value || !isValidTeamName(team2Select.selectedOptions[0]?.textContent) ||
                 team1Select.value === team2Select.value) {
                 team2Select.classList.add('is-invalid');
@@ -100,7 +100,7 @@
                 team2Select.classList.remove('is-invalid');
             }
 
-            // Validate match date
+            
             const matchDate = document.getElementById('matchDate');
             if (!matchDate.value) {
                 matchDate.classList.add('is-invalid');
@@ -112,10 +112,10 @@
             return isValid;
         };
 
-        // Add event listeners
+        
         team1Select.addEventListener('change', filterTeam2Options);
 
-        // Initialize filters
+        
         filterTeam2Options();
     });
 </script>

@@ -36,7 +36,7 @@ public class PlayerController {
     @GetMapping("/add")
     public String showAddPlayerForm(Model model) {
         model.addAttribute("player", new Player());
-        model.addAttribute("teams", teamService.getAllTeams());  // List of teams to choose from
+        model.addAttribute("teams", teamService.getAllTeams());  
         return "player/add";
     }
 
