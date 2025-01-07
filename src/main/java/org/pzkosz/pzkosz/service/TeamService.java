@@ -126,41 +126,4 @@ public class TeamService {
 
         return fields.toArray(new String[0]);
     }
-
-    @Transactional
-    public void updateTeamWinsAndLosses(Long teamId) {
-        Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new RuntimeException("Team not found"));
-
-        List<Match> matches = matchRepository.findMatchesByTeamId(teamId);
-        int wins = 0;
-        int losses = 0;
-
-        for (Match match : matches) {
-            if (match.getTeam1().getId() == teamId) {
-                if (match.getTeam1Score() > match.getTeam2Score()) {
-                    wins++;
-                } else if (match.getTeam1Score() < match.getTeam2Score()) {
-                    losses++;
-                }
-            } else {
-                if (match.getTeam2Score() > match.getTeam1Score()) {
-                    wins++;
-                } else if (match.getTeam2Score() < match.getTeam1Score()) {
-                    losses++;
-                }
-            }
-        }
-
-        team.setWins(wins);
-        team.setLosses(losses);
-        teamRepository.save(team);
-    }
-
-    public void updateAllTeamsWinsAndLosses() {
-        List<Team> teams = teamRepository.findAll();
-        for (Team team : teams) {
-            updateTeamWinsAndLosses(team.getId());
-        }
-    }
 }

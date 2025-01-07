@@ -11,11 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/match")
@@ -38,6 +36,9 @@ public class MatchController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private MatchStatsService matchStatsService;
 
     @GetMapping("/add")
     public String showAddMatchForm(Model model) {
@@ -191,8 +192,8 @@ public class MatchController {
             }
         }
 
-        teamService.updateTeamWinsAndLosses(match.getTeam1().getId());
-        teamService.updateTeamWinsAndLosses(match.getTeam2().getId());
+        matchStatsService.updateTeamWinsAndLosses(match.getTeam1().getId());
+        matchStatsService.updateTeamWinsAndLosses(match.getTeam2().getId());
 
         return "redirect:/match/" + id;
     }

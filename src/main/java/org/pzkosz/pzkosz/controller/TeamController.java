@@ -1,9 +1,11 @@
 package org.pzkosz.pzkosz.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.pzkosz.pzkosz.model.Match;
 import org.pzkosz.pzkosz.model.Player;
 import org.pzkosz.pzkosz.model.Team;
 import org.pzkosz.pzkosz.service.MatchService;
+import org.pzkosz.pzkosz.service.MatchStatsService;
 import org.pzkosz.pzkosz.service.PlayerService;
 import org.pzkosz.pzkosz.service.TeamService;
 import org.springframework.stereotype.Controller;
@@ -13,27 +15,42 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
+@Slf4j
 @RequestMapping("/team")
 public class TeamController {
 
     private final TeamService teamService;
     private final PlayerService playerService;
     private final MatchService matchService;
+    private final MatchStatsService matchStatsService;
 
-    public TeamController(TeamService teamService, PlayerService playerService, MatchService matchService) {
+    public TeamController(TeamService teamService, PlayerService playerService, MatchService matchService, MatchStatsService matchStatsService) {
         this.teamService = teamService;
         this.playerService = playerService;
         this.matchService = matchService;
+        this.matchStatsService = matchStatsService;
     }
 
     @GetMapping("/")
     public String listTeamsOnHomePage(Model model) {
+        if (matchStatsService == null) {
+            System.out.println("match service is null");
+        } else {
+            matchStatsService.updateAllTeamsWinsAndLosses();
+        }
+        assert matchStatsService != null;
         model.addAttribute("teams", teamService.getAllTeams());
         return "home";
     }
 
     @GetMapping("/list")
     public String listTeams(Model model) {
+        if (matchStatsService == null) {
+            System.out.println("match service is null");
+        } else {
+            matchStatsService.updateAllTeamsWinsAndLosses();
+        }
+        assert matchStatsService != null;
         model.addAttribute("teams", teamService.getAllTeams());
         return "team/list";
     }
