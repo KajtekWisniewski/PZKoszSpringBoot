@@ -81,6 +81,7 @@ public class TeamController {
 
     @GetMapping("/{id}")
     public String viewTeamDetails(@PathVariable long id, Model model) {
+        matchStatsService.updateTeamWinsAndLosses(id);
         Team team = teamService.getTeamById(id);
         if (team == null) {
             model.addAttribute("error", "Team not found.");

@@ -1,6 +1,7 @@
 package org.pzkosz.pzkosz.api;
 
 import org.pzkosz.pzkosz.model.*;
+import org.pzkosz.pzkosz.repository.MatchRepository;
 import org.pzkosz.pzkosz.repository.UserRepository;
 import org.pzkosz.pzkosz.service.*;
 import org.springframework.http.HttpStatus;
@@ -24,16 +25,18 @@ public class MatchEndpoint {
     private final PlayerStatisticsService playerStatisticsService;
     private final CommentService commentService;
     private final UserRepository userRepository;
+    private final MatchStatsService matchStatsService;
 
     public MatchEndpoint(MatchService matchService, TeamService teamService, PlayerService playerService,
                          PlayerStatisticsService playerStatisticsService, CommentService commentService,
-                         UserRepository userRepository) {
+                         UserRepository userRepository, MatchStatsService matchStatsService) {
         this.matchService = matchService;
         this.teamService = teamService;
         this.playerService = playerService;
         this.playerStatisticsService = playerStatisticsService;
         this.commentService = commentService;
         this.userRepository = userRepository;
+        this.matchStatsService = matchStatsService;
     }
 
     @PostMapping
@@ -73,6 +76,8 @@ public class MatchEndpoint {
         match.setTeam1Score(team1Score);
         match.setTeam2Score(team2Score);
         matchService.updateMatchScores(match.getId());
+        matchStatsService.updateTeamWinsAndLosses(match.getTeam1().getId());
+        matchStatsService.updateTeamWinsAndLosses(match.getTeam2().getId());
 
         return ResponseEntity.ok(match);
     }

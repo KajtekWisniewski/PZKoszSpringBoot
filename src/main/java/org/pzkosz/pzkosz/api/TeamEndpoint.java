@@ -3,6 +3,7 @@ package org.pzkosz.pzkosz.api;
 import org.pzkosz.pzkosz.model.Team;
 import org.pzkosz.pzkosz.model.Player;
 import org.pzkosz.pzkosz.model.Match;
+import org.pzkosz.pzkosz.service.MatchStatsService;
 import org.pzkosz.pzkosz.service.TeamService;
 import org.pzkosz.pzkosz.service.PlayerService;
 import org.pzkosz.pzkosz.service.MatchService;
@@ -19,21 +20,25 @@ public class TeamEndpoint {
     private final TeamService teamService;
     private final PlayerService playerService;
     private final MatchService matchService;
+    private final MatchStatsService matchStatsService;
 
-    public TeamEndpoint(TeamService teamService, PlayerService playerService, MatchService matchService) {
+    public TeamEndpoint(TeamService teamService, PlayerService playerService, MatchService matchService, MatchStatsService matchStatsService) {
         this.teamService = teamService;
         this.playerService = playerService;
         this.matchService = matchService;
+        this.matchStatsService = matchStatsService;
     }
 
     @GetMapping
     public ResponseEntity<List<Team>> getAllTeams() {
+        matchStatsService.updateAllTeamsWinsAndLosses();
         List<Team> teams = teamService.getAllTeams();
         return new ResponseEntity<>(teams, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Team> getTeamById(@PathVariable long id) {
+        matchStatsService.updateTeamWinsAndLosses(id);
         Team team = teamService.getTeamById(id);
         if (team == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
