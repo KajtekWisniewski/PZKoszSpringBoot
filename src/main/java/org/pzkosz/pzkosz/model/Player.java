@@ -1,5 +1,6 @@
 package org.pzkosz.pzkosz.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.util.List;
@@ -24,7 +25,8 @@ public class Player {
     private Team team;
 
     @OneToMany(mappedBy = "player")
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "team", "player", "playerStatistics"})
+    // @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "team", "player", "playerStatistics"})
+    @JsonIgnore
     private List<PlayerStatistics> playerStatistics;
 
     public Player() {}

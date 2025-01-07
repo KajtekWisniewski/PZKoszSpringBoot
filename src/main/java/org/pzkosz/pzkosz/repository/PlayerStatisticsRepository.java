@@ -17,4 +17,5 @@ public interface PlayerStatisticsRepository extends JpaRepository<PlayerStatisti
             "WHERE ps.match.id = :matchId AND ps.player.team.id = :teamId")
     Integer calculateTeamScore(@Param("matchId") Long matchId, @Param("teamId") Long teamId);
 
+    List<PlayerStatistics> findByMatchId(long matchId);
 }

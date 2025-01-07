@@ -31,6 +31,10 @@ public class PlayerStatisticsService {
         return playerStatisticsRepository.findById(statId).orElse(null);
     }
 
+    public List<PlayerStatistics> getStatisticsByMatchId(long matchId) {
+        return playerStatisticsRepository.findByMatchId(matchId);
+    }
+
     public void updateStatistics(long statId, PlayerStatistics updatedStat) {
         PlayerStatistics existingStat = getStatisticsById(statId);
         if (existingStat != null) {

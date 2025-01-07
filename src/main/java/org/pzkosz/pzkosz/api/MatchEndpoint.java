@@ -1,5 +1,7 @@
 package org.pzkosz.pzkosz.api;
 
+import org.pzkosz.pzkosz.dto.MatchStatisticsDTO;
+import org.pzkosz.pzkosz.dto.PlayerStatisticsDTO;
 import org.pzkosz.pzkosz.model.*;
 import org.pzkosz.pzkosz.repository.MatchRepository;
 import org.pzkosz.pzkosz.repository.UserRepository;
@@ -95,7 +97,7 @@ public class MatchEndpoint {
     }
 
     @PostMapping("/{id}/comments")
-    public ResponseEntity<?> addComment(@PathVariable long id, @RequestParam String content) {
+    public ResponseEntity<?> addComment(@PathVariable long id, @RequestBody String content) {
         Match match = matchService.getMatchById(id);
         if (match == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Match not found.");
@@ -129,25 +131,21 @@ public class MatchEndpoint {
 
     @PostMapping("/{id}/statistics")
     public ResponseEntity<?> submitStatistics(@PathVariable long id,
-                                              @RequestParam("playerIds[]") List<Long> playerIds,
-                                              @RequestParam Map<String, String> stats) {
+                                              @RequestBody MatchStatisticsDTO statisticsDTO) {
         Match match = matchService.getMatchById(id);
         if (match == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Match not found.");
         }
 
-        for (Long playerId : playerIds) {
-            Player player = playerService.getPlayerById(playerId);
+        for (PlayerStatisticsDTO statDTO : statisticsDTO.getPlayerStatistics()) {
+            Player player = playerService.getPlayerById(statDTO.getPlayerId());
             if (player != null) {
-                int pointsScored = Integer.parseInt(stats.get("pointsScored-" + playerId));
-                int rebounds = Integer.parseInt(stats.get("rebounds-" + playerId));
-
                 PlayerStatistics playerStats = new PlayerStatistics();
                 playerStats.setMatch(match);
                 playerStats.setPlayer(player);
                 playerStats.setTeam(player.getTeam());
-                playerStats.setPointsScored(pointsScored);
-                playerStats.setRebounds(rebounds);
+                playerStats.setPointsScored(statDTO.getPointsScored());
+                playerStats.setRebounds(statDTO.getRebounds());
 
                 playerStatisticsService.savePlayerStatistics(playerStats);
             }
@@ -157,15 +155,40 @@ public class MatchEndpoint {
     }
 
     @PutMapping("/{matchId}/statistics/{statId}")
-    public ResponseEntity<?> updateStatistics(@PathVariable long matchId, @PathVariable long statId,
-                                              @RequestBody PlayerStatistics updatedStat) {
+    public ResponseEntity<?> updateStatistics(@PathVariable long matchId,
+                                              @PathVariable long statId,
+                                              @RequestBody PlayerStatisticsDTO statisticsDTO) {
         Match match = matchService.getMatchById(matchId);
         if (match == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Match not found.");
         }
 
-        playerStatisticsService.updateStatistics(statId, updatedStat);
+        Player player = playerService.getPlayerById(statisticsDTO.getPlayerId());
+        if (player == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Player not found.");
+        }
+
+        PlayerStatistics updatedStats = new PlayerStatistics();
+        updatedStats.setId(statId);
+        updatedStats.setMatch(match);
+        updatedStats.setPlayer(player);
+        updatedStats.setTeam(player.getTeam());
+        updatedStats.setPointsScored(statisticsDTO.getPointsScored());
+        updatedStats.setRebounds(statisticsDTO.getRebounds());
+
+        playerStatisticsService.updateStatistics(statId, updatedStats);
         return ResponseEntity.ok("Statistics updated successfully");
+    }
+
+    @GetMapping("/{id}/statistics")
+    public ResponseEntity<?> getMatchStatistics(@PathVariable long id) {
+        Match match = matchService.getMatchById(id);
+        if (match == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Match not found.");
+        }
+
+        List<PlayerStatistics> statistics = playerStatisticsService.getStatisticsByMatchId(id);
+        return ResponseEntity.ok(statistics);
     }
 
     @DeleteMapping("/{matchId}/statistics/{statId}")
