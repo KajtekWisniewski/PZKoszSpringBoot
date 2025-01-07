@@ -40,7 +40,6 @@ public class AuthEndpoint {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String jwt = jwtService.generateToken(userDetails);
 
-            // Debug: Print JWT token to console
             System.out.println("Generated JWT token: " + jwt);
 
             return ResponseEntity.ok()

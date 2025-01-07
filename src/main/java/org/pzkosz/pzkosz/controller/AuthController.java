@@ -23,9 +23,15 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String registerUser(PZKoszUser user) {
-        userService.registerUser(user);
-        return "redirect:/login";
+    public String registerUser(PZKoszUser user, Model model) {
+        try {
+            userService.registerUser(user);
+            return "redirect:/login";
+        } catch (Exception e) {
+            model.addAttribute("error", "Username already exists or registration failed");
+            model.addAttribute("user", user);
+            return "register";
+        }
     }
 
     @GetMapping("/login")

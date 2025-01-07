@@ -35,6 +35,9 @@ public class UserService implements UserDetailsService {
 
 
     public void registerUser(PZKoszUser user) {
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new RuntimeException("Username already exists");
+        }
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         userRepository.save(user);
     }

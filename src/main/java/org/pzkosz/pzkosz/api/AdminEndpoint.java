@@ -24,35 +24,19 @@ public class AdminEndpoint {
     @Autowired
     private TeamService teamService;
 
-    /**
-     * Get a list of all users.
-     *
-     * @return a list of all users
-     */
+
     @GetMapping("/users")
     public ResponseEntity<List<PZKoszUser>> getAllUsers() {
         List<PZKoszUser> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
-    /**
-     * Delete a user by ID.
-     *
-     * @param id the ID of the user to delete
-     * @return a success message
-     */
     @DeleteMapping("/user/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok("User with ID " + id + " has been deleted.");
     }
 
-    /**
-     * Import teams from a CSV file.
-     *
-     * @param file the CSV file containing team data
-     * @return a success or error message
-     */
     @PostMapping("/teams/import")
     public ResponseEntity<String> importTeams(@RequestParam("file") MultipartFile file) {
         try {
@@ -63,11 +47,6 @@ public class AdminEndpoint {
         }
     }
 
-    /**
-     * Export all teams to a CSV file.
-     *
-     * @return a ResponseEntity containing the CSV file as a stream
-     */
     @GetMapping("/teams/export")
     public ResponseEntity<StreamingResponseBody> exportTeamsToCSV() {
         return teamService.exportTeamsToCSV();
