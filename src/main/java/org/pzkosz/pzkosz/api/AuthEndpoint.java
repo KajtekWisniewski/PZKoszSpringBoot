@@ -1,6 +1,8 @@
 package org.pzkosz.pzkosz.api;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.pzkosz.pzkosz.model.PZKoszUser;
 import org.pzkosz.pzkosz.security.JwtService;
 import org.pzkosz.pzkosz.service.UserService;
@@ -31,24 +33,27 @@ public class AuthEndpoint {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@RequestParam String username, @RequestParam String password) {
+    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequestDTO loginRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password)
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
             );
-
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String jwt = jwtService.generateToken(userDetails);
-
-            System.out.println("Generated JWT token: " + jwt);
-
-            return ResponseEntity.ok()
-                    .body(new AuthResponse(jwt));
+            return ResponseEntity.ok().body(new AuthResponse(jwt));
         } catch (Exception e) {
-            return ResponseEntity.status(401)
-                    .body("Authentication failed: " + e.getMessage());
+            return ResponseEntity.status(401).body("Authentication failed: " + e.getMessage());
         }
     }
-}
 
-record AuthResponse(String token) {}
+    record AuthResponse(String token) {
+    }
+
+    @Getter
+    @Setter
+    public static class LoginRequestDTO {
+        private String username;
+        private String password;
+
+    }
+}
