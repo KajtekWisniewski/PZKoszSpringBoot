@@ -1,7 +1,10 @@
 package org.pzkosz.pzkosz.service;
 
 import com.opencsv.CSVWriter;
+import jakarta.transaction.Transactional;
+import org.pzkosz.pzkosz.model.Match;
 import org.pzkosz.pzkosz.model.Team;
+import org.pzkosz.pzkosz.repository.MatchRepository;
 import org.pzkosz.pzkosz.repository.TeamRepository;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +20,11 @@ import java.util.*;
 public class TeamService {
 
     private final TeamRepository teamRepository;
+    private final MatchRepository matchRepository;
 
-    public TeamService(TeamRepository teamRepository) {
+    public TeamService(TeamRepository teamRepository, MatchRepository matchRepository) {
         this.teamRepository = teamRepository;
+        this.matchRepository = matchRepository;
     }
 
     public List<Team> getAllTeams() {
@@ -120,5 +125,42 @@ public class TeamService {
         fields.add(currentField.toString().trim());
 
         return fields.toArray(new String[0]);
+    }
+
+    @Transactional
+    public void updateTeamWinsAndLosses(Long teamId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new RuntimeException("Team not found"));
+
+        List<Match> matches = matchRepository.findMatchesByTeamId(teamId);
+        int wins = 0;
+        int losses = 0;
+
+        for (Match match : matches) {
+            if (match.getTeam1().getId() == teamId) {
+                if (match.getTeam1Score() > match.getTeam2Score()) {
+                    wins++;
+                } else if (match.getTeam1Score() < match.getTeam2Score()) {
+                    losses++;
+                }
+            } else {
+                if (match.getTeam2Score() > match.getTeam1Score()) {
+                    wins++;
+                } else if (match.getTeam2Score() < match.getTeam1Score()) {
+                    losses++;
+                }
+            }
+        }
+
+        team.setWins(wins);
+        team.setLosses(losses);
+        teamRepository.save(team);
+    }
+
+    public void updateAllTeamsWinsAndLosses() {
+        List<Team> teams = teamRepository.findAll();
+        for (Team team : teams) {
+            updateTeamWinsAndLosses(team.getId());
+        }
     }
 }

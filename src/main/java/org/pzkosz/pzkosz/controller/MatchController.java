@@ -191,6 +191,9 @@ public class MatchController {
             }
         }
 
+        teamService.updateTeamWinsAndLosses(match.getTeam1().getId());
+        teamService.updateTeamWinsAndLosses(match.getTeam2().getId());
+
         return "redirect:/match/" + id;
     }
 
